@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sorry Mary Madam 🥺</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- THEME --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --primary: #ff6b6b;
+            --secondary: #ff9f43;
+            --text-color: #2f3542;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(to bottom, #ffe6e9, #fff0f3);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* --- HEADER --- */
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: var(--primary);
+            text-shadow: 2px 2px 0px #fff;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        /* --- CARDS --- */
+        .cute-card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 30px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 2px solid #fff;
+            position: relative;
+            touch-action: manipulation;
+        }
+
+        h3 { font-family: 'Fredoka One', cursive; color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; }
+        p { margin-bottom: 15px; color: #57606f; line-height: 1.6; }
+
+        /* --- MOOD METER --- */
+        .meter-box { margin: 20px 0; }
+        .meter-bg {
+            width: 100%; height: 20px; background: #dfe4ea;
+            border-radius: 10px; overflow: hidden; border: 2px solid #fff;
+        }
+        .meter-fill {
+            height: 100%; width: 100%;
+            background: linear-gradient(90deg, #ff4757, #ffa502);
+            transition: width 0.5s, background 0.5s;
+        }
+
+        /* --- IMAGE --- */
+        .note-img {
+            width: 100%; max-width: 300px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 5px solid white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .note-img:active { transform: scale(0.95); }
+        
+        .hidden-text {
+            display: none;
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-family: 'Pacifico', cursive;
+            color: #e17055;
+            border: 1px solid #ffeaa7;
+        }
+
+        /* --- BUTTONS --- */
+        .btn {
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.1s;
+            width: 100%;
+            color: white;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            touch-action: manipulation;
+        }
+        .btn:active { transform: translateY(3px); box-shadow: none; }
+        
+        .btn-happy { background: #2ed573; }
+        .btn-slap { background: #ff6b6b; }
+        .btn-gift { background: #ffeaa7; color: #d35400; animation: shake 3s infinite; }
+        .btn-yes { background: #2ed573; font-size: 1.3rem; }
+        .btn-no { background: #ff4757; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+        /* Floating Elements */
+        .floater {
+            position: fixed;
+            font-size: 2rem;
+            pointer-events: none;
+            z-index: 5;
+            animation: floatUp 2s linear forwards;
+        }
+        @keyframes floatUp { 
+            0% { transform: translateY(0) scale(0.5); opacity: 1; } 
+            100% { transform: translateY(-200px) scale(1.5); opacity: 0; } 
+        }
+
+        /* SLAP ANIMATION OVERLAY */
+        .slap-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .hand-slap { font-size: 8rem; position: absolute; left: -100px; opacity: 0; }
+        .bonk-text { 
+            font-size: 5rem; font-weight: bold; color: #ff4757; 
+            text-shadow: 4px 4px 0 white; position: absolute; opacity: 0;
+            font-family: 'Fredoka One', cursive;
+        }
+        
+        @keyframes doSlap {
+            0% { left: -150px; opacity: 0; transform: rotate(-45deg); }
+            40% { left: 50%; opacity: 1; transform: translateX(-50%) rotate(0deg); } /* HIT */
+            60% { left: 50%; opacity: 1; transform: translateX(-50%) rotate(0deg); } /* HOLD */
+            100% { left: 150%; opacity: 0; transform: rotate(-45deg); }
+        }
+
+        @keyframes showBonk {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .gift-icon { font-size: 4rem; display: inline-block; transition: transform 0.3s; }
+        .gift-open { transform: scale(1.5); filter: drop-shadow(0 0 10px gold); }
+        
+        .final-msg { display: none; color: #2ed573; font-family: 'Fredoka One'; font-size: 1.5rem; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Sorry Mary Madam</h1>
+
+        <!-- 1. Story -->
+        <div class="cute-card">
+            <h3>About Saim...</h3>
+            <p>
+                I know the mention of <strong style="color:var(--primary)">Saim</strong> has caused a storm between us. Meeting him was a huge mistake. I regret it deeply.
+            </p>
+            <p>
+                Please don't let our relation end because of this.
+            </p>
+        </div>
+
+        <!-- 2. Mood Meter -->
+        <div class="cute-card">
+            <h3>Make You Happy 💖</h3>
+            <p id="mood-text">Angry 😠</p>
+            <div class="meter-box">
+                <div class="meter-bg"><div class="meter-fill" id="mood-bar"></div></div>
+            </div>
+            <button class="btn btn-happy" onclick="makeHappy()">Tap to Make You Happy</button>
+        </div>
+
+        <!-- 3. Note -->
+        <div class="cute-card">
+            <h3>Tap to Read Note</h3>
+            <div style="padding: 10px;">
+                <img src="https://placehold.co/300x300/ff6b6b/ffffff?text=I+Am+Sorry" alt="Apology Note" class="note-img" onclick="toggleNote()">
+            </div>
+            <div id="secret-note" class="hidden-text">
+                "I promise to never repeat my mistake. Please forgive me!"
+            </div>
+        </div>
+
+        <!-- 4. Slap Me -->
+        <div class="cute-card">
+            <h3>Take it out on me!</h3>
+            <button class="btn btn-slap" onclick="doSlapEffect()">Slap Me! 🤚</button>
+        </div>
+
+        <!-- 5. Gift -->
+        <div class="cute-card">
+            <h3>A small gift...</h3>
+            <div id="gift" class="gift-icon">🎁</div>
+            <div style="margin-top:10px;">
+                <button class="btn btn-gift" onclick="openGift()">Open Surprise</button>
+            </div>
+            <p id="gift-reveal" style="display:none; color:#d35400; font-weight:bold; margin-top:10px;">It's My Heart! ❤️</p>
+        </div>
+
+        <!-- 6. Decision -->
+        <div class="cute-card">
+            <h3>Final Decision?</h3>
+            <div id="choices">
+                <button class="btn btn-yes" onclick="forgive()">Yes, I Forgive You</button>
+                <button class="btn btn-no" id="noBtn" onclick="dontForgive()">No, Not Yet</button>
+            </div>
+            <div id="final" class="final-msg">Yay! Thank you! 🥳</div>
+        </div>
+    </div>
+
+    <!-- Slap Animation Container (Hidden by default) -->
+    <div id="slap-container" class="slap-overlay">
+        <div id="bonk" class="bonk-text">BONK!</div>
+        <div id="hand" class="hand-slap">🤚</div>
+    </div>
+
+    <script>
+        // --- VARIABLES ---
+        let mood = 100;
+        let noCount = 0;
+        const msgs = ["Are you sure?", "Really?", "Think again!", "Please?", "My heart...", "Don't break it!", "Give chance?", "Last chance!", "Pretty please?", "I'll be good!", "I'm sorry!", "Please Mary!", "One more chance?", "I'm crying 😢", "Okay fine...", "Wait!", "Don't leave me!", "I'm sorry!", "Open Chat ->", "Please..."];
+
+        // --- 1. MOOD ---
+        function makeHappy() {
+            if(mood > 0) {
+                mood -= 10;
+                const bar = document.getElementById('mood-bar');
+                const txt = document.getElementById('mood-text');
+                bar.style.width = mood + '%';
+                
+                if(mood <= 30) { bar.style.background = '#2ed573'; txt.innerText = "Happy 😄"; }
+                else if(mood <= 70) { bar.style.background = '#ffeaa7'; txt.innerText = "Okay 🤔"; }
+                
+                // Spawn Flower
+                createFloater(['🌸', '💖', '✨', '🌹'][Math.floor(Math.random()*4)]);
+            }
+        }
+
+        // --- 2. NOTE ---
+        function toggleNote() {
+            const note = document.getElementById('secret-note');
+            note.style.display = note.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // --- 3. SLAP (FIXED) ---
+        function doSlapEffect() {
+            const container = document.getElementById('slap-container');
+            const hand = document.getElementById('hand');
+            const bonk = document.getElementById('bonk');
+            
+            // Show overlay
+            container.style.opacity = '1';
+            
+            // Run Hand Animation
+            hand.style.animation = 'doSlap 0.5s ease-in-out forwards';
+            
+            // Run Bonk Text (starts halfway)
+            setTimeout(() => {
+                bonk.style.animation = 'showBonk 0.2s forwards';
+            }, 200);
+            
+            // Hide everything
+            setTimeout(() => {
+                container.style.opacity = '0';
+                hand.style.animation = 'none';
+                bonk.style.animation = 'none';
+            }, 1000);
+        }
+
+        // --- 4. GIFT ---
+        function openGift() {
+            document.getElementById('gift').innerText = '❤️';
+            document.getElementById('gift').classList.add('gift-open');
+            document.getElementById('gift-reveal').style.display = 'block';
+            document.querySelector('.btn-gift').style.display = 'none';
+        }
+
+        // --- 5. NO BUTTON ---
+        function dontForgive() {
+            const btn = document.getElementById('noBtn');
+            if(noCount < 20) {
+                btn.innerText = msgs[noCount];
+                let scale = 1 - (noCount * 0.04);
+                if(scale < 0.6) scale = 0.6; // Keep it visible
+                btn.style.transform = `scale(${scale})`;
+                noCount++;
+            }
+        }
+
+        // --- 6. YES BUTTON ---
+        function forgive() {
+            document.getElementById('choices').style.display = 'none';
+            document.getElementById('final').style.display = 'block';
+            // Confetti
+            for(let i=0; i<20; i++) {
+                setTimeout(() => createFloater(['🎉','🥳','💖','✨'][Math.floor(Math.random()*4)]), i*100);
+            }
+        }
+
+        // Helper
+        function createFloater(emoji) {
+            const el = document.createElement('div');
+            el.classList.add('floater');
+            el.innerText = emoji;
+            el.style.left = Math.random() * 80 + 10 + '%';
+            el.style.bottom = '20%';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 2000);
+        }
+    </script>
+</body>
+</html>
